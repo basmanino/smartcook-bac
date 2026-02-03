@@ -117,11 +117,13 @@ def suggest_ai_recipe(data: IngredientList, db: Session = Depends(get_db)):
     user_ingredients = ", ".join(data.ingredients)
     
     # التأكد من وجود مفتاح Groq
-  api_key = os.environ.get("GROQ_API_KEY")
-client = OpenAI(
-    base_url="https://api.groq.com/openai/v1",
-    api_key=api_key
-)
+# التأكد من وجود مفتاح Groq
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise HTTPException(
+            status_code=400, 
+            detail="GROQ API Key is missing in environment variables."
+        )
 
     try:
         # استعمال موديل Llama 3 من Groq
@@ -157,3 +159,4 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
